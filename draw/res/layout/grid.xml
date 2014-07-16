@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="243dp"
+    android:layout_height="180dp"
+    android:orientation="vertical"
+    android:gravity="center" >
+	
+    <FrameLayout 
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <ImageView
+	        android:id="@+id/grideimg"
+	        android:layout_width="223dp"
+	        android:layout_height="160dp"
+	        android:layout_gravity="left"
+	        android:src="@drawable/frame" />
+        <ImageView 
+            android:id="@+id/itemimage"
+            android:layout_width="198dp"
+            android:layout_height="134dp"
+            android:layout_gravity="left"
+            android:layout_marginLeft="12.5dp"
+            android:layout_marginTop="12.5dp"
+            android:src="@drawable/frame"/>
+	    <ImageView
+	        android:id="@+id/sorceimg"
+	        android:layout_width="84dp"
+	        android:layout_height="84dp"
+	        android:layout_gravity="bottom"
+	        android:layout_marginLeft="159dp"
+	        android:src="@drawable/gframe" />
+		<TextView 
+	        android:id="@+id/gridfenshu"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:textSize="29dp"
+	        android:layout_gravity="bottom"
+	        android:layout_marginLeft="186dp"
+	        android:layout_marginBottom="25dp"
+		    android:text="88"/>
+		
+	    <TextView
+	        android:id="@+id/createdatetime"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_gravity="bottom"
+	        android:layout_marginLeft="20dp"
+	        android:text="TextView" />
+    </FrameLayout>
+
+</LinearLayout>

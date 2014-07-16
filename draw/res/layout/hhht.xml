@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+    
+   <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        >
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/tv"
+        android:text="请放入绘画后的图"
+        android:layout_marginTop="280dp"
+        android:textSize="40sp"
+        />
+    <Button
+        android:layout_width="160dp"
+        android:layout_height="60dp"
+        android:text="下一步"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:onClick="next"        />
+    </RelativeLayout>
+     
+       
+</LinearLayout>
+
