@@ -83,7 +83,7 @@ public class VideoListActivity extends DownloadActivity {
 				}
 			}
 		}
-		if(isAutoPlay&&currPosition!=-1){
+		if(isAutoPlay&&currPosition != -1){
 			final VideoItem videoItem=adapter.getItem(currPosition);
 			if(videoItem.isComplete()){
 				File file = videoItem.getFile();
@@ -166,7 +166,7 @@ public class VideoListActivity extends DownloadActivity {
 			int size = adapter.getCount();
 			currPosition++;
 			if(currPosition>=size){
-				return;
+				currPosition = 0;
 			}
 			final VideoItem videoItem=adapter.getItem(currPosition);
 			if(videoItem.isComplete()){
