@@ -284,7 +284,7 @@ public class ShezhiActivity extends Activity {
 			if(ShezhiActivity.CAMERA_Z_CODE==requestCode ){
 				try {
 					
-					zPercent = ImageUtil.getGrayPercent(bitmap, value);
+					zPercent = ImageUtil.getPixCount(bitmap, value);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -317,7 +317,7 @@ public class ShezhiActivity extends Activity {
 		public void run() {
 			
 			try {
-				boolean isSuccess = Threads.setRegion(AllPath.Get(), this.pairMap);
+				boolean isSuccess = Threads.setRegion(AllPath.getMakeMaxDifferenceUrl(), this.pairMap);
 				Looper looper = Looper.getMainLooper();
 				Handler handler = new showHandler(looper);
 				Message msg = Message.obtain();

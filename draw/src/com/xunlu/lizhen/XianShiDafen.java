@@ -17,6 +17,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.BitmapFactory.Options;
 import android.graphics.Canvas;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
@@ -44,9 +45,9 @@ public class XianShiDafen extends Activity {
 	private static final int PICTURE = 0;
 	boolean flags = true;
 	private ImageView fly;
-	private ImageView iv;
+	private ImageView imageView;
 	private static int size;
-	private static int bianhao;
+	private static int resultCode;
 	private static Uri img;
 	
 	public static int getSize() {
@@ -55,11 +56,11 @@ public class XianShiDafen extends Activity {
 	public static void setSize(int size) {
 		XianShiDafen.size = size;
 	}
-	public static int getBianhao() {
-		return bianhao;
+	public static int getResultCode() {
+		return resultCode;
 	}
-	public static void setBianhao(int bianhao) {
-		XianShiDafen.bianhao = bianhao;
+	public static void setResultCode(int bianhao) {
+		XianShiDafen.resultCode = bianhao;
 	}
 	private static List<Bitmap> lmap = null;
 	public static List<Bitmap> getLmap() {
@@ -74,17 +75,20 @@ public class XianShiDafen extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.zzsm);
 		fly = (ImageView) findViewById(R.id.flys);
-		iv = (ImageView) findViewById(R.id.iv_zzsm);
+		imageView = (ImageView) findViewById(R.id.iv_zzsm);
 
+		BitmapFactory.Options opt = new BitmapFactory.Options();
         Intent reqInetIntent = getIntent();
-        ArrayList<String> uris = reqInetIntent.getStringArrayListExtra("Uris"); 
+//        ArrayList<String> uris = reqInetIntent.getStringArrayListExtra("Uris"); 
 		img = reqInetIntent.getData();
 		Bitmap newBitmap = null;
 		Bitmap bitmap = null;
 		if(img!=null){
+			opt.inSampleSize = 4;
             bitmap=BitmapFactory.decodeFile(img.getPath());
-            newBitmap = ImageUtil.zoomBitmap(bitmap, bitmap.getWidth()/4, bitmap.getHeight()/4);
-            iv.setImageBitmap(newBitmap);
+            //newBitmap = ImageUtil.zoomBitmap(bitmap, bitmap.getWidth()/4, bitmap.getHeight()/4);
+            newBitmap = BitmapFactory.decodeFile(img.getPath(), opt);
+            imageView.setImageBitmap(newBitmap);
             //bitmap
 
 		}else{
@@ -103,36 +107,35 @@ public class XianShiDafen extends Activity {
 				value = spf.getInt("value", 450);
 			}
 			try {
-				if(uris!=null){
-					for (int i = 0; i < uris.size(); i++) {
-						String pathString = uris.get(i);
-						if (pathString==null){
-							break;
-						}
-						if(pathString.length()<1){
-							break;
-						}
-			            Bitmap tmpBmp = ImageUtil.zoomBitmap(bitmap, bitmap.getWidth()/6, bitmap.getHeight()/6);
-			            long tmp = ImageUtil.getGrayPercent(tmpBmp, value);
-						if(avgNum ==0){
-							avgNum = tmp;
-						}else{
-							avgNum = (avgNum+tmp)/2;
-						}
-					}
-				}else{
-					Bitmap tmpBmpBitmap = ImageUtil.zoomBitmap(bitmap, bitmap.getWidth()/6, bitmap.getHeight()/6);
-					avgNum = ImageUtil.getGrayPercent(tmpBmpBitmap, value);
-				}
+//				if(uris!=null){
+//					for (int i = 0; i < uris.size(); i++) {
+//						String pathString = uris.get(i);
+//						if (pathString==null){
+//							break;
+//						}
+//						if(pathString.length()<1){
+//							break;
+//						}
+//			            Bitmap tmpBmp = ImageUtil.zoomBitmap(bitmap, bitmap.getWidth()/6, bitmap.getHeight()/6);
+//			            long tmp = ImageUtil.getPixCount(tmpBmp);
+//						if(avgNum ==0){
+//							avgNum = tmp;
+//						}else{
+//							avgNum = (avgNum+tmp)/2;
+//						}
+//					}
+//				}else{
+				//Bitmap tmpBmpBitmap = ImageUtil.zoomBitmap(bitmap, bitmap.getWidth()/6, bitmap.getHeight()/6);
+				opt.inSampleSize = 6;
+				Bitmap tmpBmpBitmap = BitmapFactory.decodeFile(img.getPath(), opt);
+				avgNum = ImageUtil.getPixCount(tmpBmpBitmap);
+//				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
 
 		handler1.post(thread);
-//		if(null != ListMap.getLb().get(0)){
-//			iv.setImageBitmap(ListMap.getLb().get(0));
-//		}
 		final TranslateAnimation animation = new TranslateAnimation(1024, 0, 0,
 				0);
 		animation.setDuration(4000);// 设置动画持续时间
@@ -148,7 +151,9 @@ public class XianShiDafen extends Activity {
 		if (scanResult!=null){
 			if(scanResult.length()>0){
 				Log.e("::::::", scanResult.length()+"");
-				new Thread(new GetFen(reqInetIntent.getExtras().getString("scan_result"), avgNum, reqInetIntent)).start();
+				String resultCode = reqInetIntent.getExtras().getString("scan_result");
+				GetGrade getGradeThread = new GetGrade(resultCode, avgNum, reqInetIntent);
+				new Thread(getGradeThread).start();
 			}
 		}
 	}
@@ -196,78 +201,63 @@ public class XianShiDafen extends Activity {
 		startActivity(intent);
 	}
 	
-	public long grade(long base, long difference, long curr){
+	
+	/**
+	 * 
+	 * @param basePixCount	 基准图的像素累加值
+	 * @param maxDifference  最大差异值
+	 * @param currPixCount	 当前图的像素累加值
+	 * @return
+	 */
+	public long grade(long basePixCount, long maxDifference, long currPixCount){
 		double value = 0.00d;
-		long currDiff = Math.abs(base-curr);
-		if(currDiff==difference){
+		long currDiff = Math.abs(basePixCount-currPixCount); //计算当前差异值
+		if(currDiff==maxDifference){				//如果当前差异等于最大差异代表是满分
 			return 100;
-		}
-		value = currDiff/(difference/40);
-		value+=60;
+		} 
+		value = currDiff/(maxDifference/40); //根据最大差异和当前差异计算满分40分时可以得几分
+		value+=60;							//加上60分得到不小于60的值
 		if(value<60){
 			value = 60.00d;
 		}
 		return (long)value;
 	}
 	
-	// //下面是相应的回调方法：
-	// @Override
-	// protected void onActivityResult(int requestCode, int resultCode, Intent
-	// data) {
-	// super.onActivityResult(requestCode, resultCode, data);
-	// Log.e("dddddd","dddddddddddd");
-	// if(requestCode == CAMERA && resultCode == Activity.RESULT_OK && null !=
-	// data){
-	// Intent picture = new
-	// Intent(Intent.ACTION_PICK,android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-	// startActivityForResult(picture, PICTURE);
-	// Uri selectedImage = data.getData();
-	// String[] filePathColumns={MediaStore.Images.Media.DATA};
-	// Cursor c = this.getContentResolver().query(selectedImage,
-	// filePathColumns, null,null, null);
-	// c.moveToFirst();
-	// int columnIndex = c.getColumnIndex(filePathColumns[0]);
-	// String picturePath= c.getString(columnIndex);
-	// iv.setImageBitmap(lmap.get(0));
-	// c.close();
-	// //获取图片并显示
-	//
-	// }
-	class GetFen implements Runnable{
-        String bianhao;
-        long percent;
+
+	class GetGrade implements Runnable{
+        String resultCode;
+        long pixCount;
         Intent intent;
-        public GetFen(String bianhao) {
+        public GetGrade(String resultCode) {
 			super();
-			this.bianhao = bianhao;
+			this.resultCode = resultCode;
 		}
-        public GetFen(int bianhao) {
+        public GetGrade(int resultCode) {
 			super();
-			this.bianhao = String.valueOf(bianhao);
+			this.resultCode = String.valueOf(resultCode);
 		}
-        public GetFen(String bianhao, long percent, Intent intent) {
+        public GetGrade(String resultCode, long pixCount, Intent intent) {
 			super();
-			this.bianhao = bianhao;
-			this.percent = percent;
+			this.resultCode = resultCode;
+			this.pixCount = pixCount;
 			this.intent = intent;
 		}
-        public GetFen(int bianhao, long percent) {
+        public GetGrade(int resultCode, long pixCount) {
 			super();
-			this.bianhao = String.valueOf(bianhao);
-			this.percent = percent;
+			this.resultCode = String.valueOf(resultCode);
+			this.pixCount = pixCount;
 		}
 		@Override
 		public void run() {
-			Log.e("genegen", "我去获取分数了-----");
 			try {
-				String path = AllPath.Get();
-			    String result = Threads.GetINPutStream(path,bianhao,percent);
+				String path = AllPath.getMakeMaxDifferenceUrl();
+			    String result = Threads.getHttpMaxCountPix(path,resultCode,pixCount);
 				
-				long f = 0;
-				long max = 0;
+				long baseImgPixCount = 0;
+				long maxImgPixDifference = 0;
 				JSONObject jsonObject = GetRes.getJasonObject(result);
-				f = jsonObject.getLong("base_score");
-				max = jsonObject.getLong("max");
+				baseImgPixCount = jsonObject.getLong("base_score");
+				maxImgPixDifference = jsonObject.getLong("max");
 				Looper mainLooper = Looper.getMainLooper();
 				Handler handler = new Handler(mainLooper){
 
@@ -276,23 +266,23 @@ public class XianShiDafen extends Activity {
 						// TODO Auto-generated method stub
 						super.handleMessage(msg);
 						if(msg.what==1){
-							Tiao((Long)msg.obj);
+							startNextActivity((Long)msg.obj);
 						}
 					}
 				};
-				long gd = grade(f, max,percent);
+				long finalGrade = grade(baseImgPixCount, maxImgPixDifference,pixCount);
 				Message msg = Message.obtain();
 				msg.what=1;
-				msg.obj=Long.valueOf(gd);
+				msg.obj=Long.valueOf(finalGrade);
 				handler.sendMessage(msg);
 				path = AllPath.getListUrl();
 				Uri imgUri = intent.getData();
 				Map<String, ContentBody> pairMap = new HashMap<String, ContentBody>();
 				pairMap.put("name", new StringBody(intent.getExtras().getString("username")));
-				pairMap.put("pname", new StringBody(bianhao));
+				pairMap.put("pname", new StringBody(resultCode));
 				pairMap.put("phone", new StringBody(intent.getExtras().getString("userphon")));
-				pairMap.put("score", new StringBody(String.valueOf(gd)));
-				pairMap.put("key_score", new StringBody(String.valueOf(percent)));
+				pairMap.put("score", new StringBody(String.valueOf(finalGrade)));
+				pairMap.put("key_score", new StringBody(String.valueOf(pixCount)));
 				if (imgUri!=null){
 					pairMap.put("image", new FileBody(new File(imgUri.getPath()),"image/jpeg"));
 				}
@@ -307,7 +297,7 @@ public class XianShiDafen extends Activity {
 		}
 	}
 
-	public void Tiao(long d){
+	public void startNextActivity(long d){
 		Intent ji = new Intent(XianShiDafen.this, smjg.class);
 		ji.setData(getIntent().getData());
 		if(d>=60&&d<70){

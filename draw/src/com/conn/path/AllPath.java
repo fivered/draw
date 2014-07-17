@@ -11,7 +11,7 @@ public class AllPath {
 	public static void setGetFuadress(String getFuadress) {
 		AllPath.getFuadress = getFuadress;
 	}
-	public static String Get(){
+	public static String getMakeMaxDifferenceUrl(){
 		String path = getFuadress+ "/Api/Pic/pic/";
 		return path;
 	}

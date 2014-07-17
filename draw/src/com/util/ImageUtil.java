@@ -75,11 +75,11 @@ public class ImageUtil {
 	}
 	
 	/**
-	 * 获取灰点占图中百分比
+	 * 获取图中所有像素累加值
 	 * @return percent
 	 * @throws Exception 
 	 */
-	public static long getGrayPercent(Bitmap bm, int value) throws Exception{
+	public static long getPixCount(Bitmap bm) throws Exception{
 		Bitmap grayBm = ImageUtil.bitmap2Gray(bm);
 		Bitmap Bm = grayBm;
 		long gotPoint = 0;

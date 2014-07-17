@@ -21,9 +21,9 @@ import org.apache.http.util.EntityUtils;
 public class Threads {
 	private static InputStream input = null;
 	
-	public static String GetINPutStream(String path,String name, long currMun) throws Exception {
+	public static String getHttpMaxCountPix(String path,String name, long currNum) throws Exception {
 
-		path = path+"?name="+name+"&max="+currMun;
+		path = path+"?name="+name+"&max="+currNum;
 		URI uri = new URI(path);
 		HttpGet request = new HttpGet(uri);
 		HttpClient httpClient = new DefaultHttpClient();
