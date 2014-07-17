@@ -50,8 +50,8 @@ public class MainActivity extends Activity {
 
 	// 设置选项的跳页
 	public void sz(View v) {
-		Intent intent = new Intent(this, ShezhiActivity.class);
-		
+		//Intent intent = new Intent(this, ShezhiActivity.class);
+		Intent intent = new Intent(this, SetUpActivity.class);
 		startActivity(intent);
 	}
 
