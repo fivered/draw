@@ -82,10 +82,10 @@ public class XianShiDafen extends Activity {
 //        ArrayList<String> uris = reqInetIntent.getStringArrayListExtra("Uris"); 
 		img = reqInetIntent.getData();
 		Bitmap newBitmap = null;
-		Bitmap bitmap = null;
+//		Bitmap bitmap = null;
 		if(img!=null){
 			opt.inSampleSize = 4;
-            bitmap=BitmapFactory.decodeFile(img.getPath());
+//            bitmap=BitmapFactory.decodeFile(img.getPath());
             //newBitmap = ImageUtil.zoomBitmap(bitmap, bitmap.getWidth()/4, bitmap.getHeight()/4);
             newBitmap = BitmapFactory.decodeFile(img.getPath(), opt);
             imageView.setImageBitmap(newBitmap);
@@ -94,7 +94,7 @@ public class XianShiDafen extends Activity {
 		}else{
 			return;
 		}
-		long avgNum = 0;
+//		long avgNum = 0;
 		if (newBitmap != null)
 		{
 
@@ -106,7 +106,6 @@ public class XianShiDafen extends Activity {
 			if (spf.getString("ic", "").equals("1")) {
 				value = spf.getInt("value", 450);
 			}
-			try {
 //				if(uris!=null){
 //					for (int i = 0; i < uris.size(); i++) {
 //						String pathString = uris.get(i);
@@ -126,13 +125,10 @@ public class XianShiDafen extends Activity {
 //					}
 //				}else{
 				//Bitmap tmpBmpBitmap = ImageUtil.zoomBitmap(bitmap, bitmap.getWidth()/6, bitmap.getHeight()/6);
-				opt.inSampleSize = 6;
-				Bitmap tmpBmpBitmap = BitmapFactory.decodeFile(img.getPath(), opt);
-				avgNum = ImageUtil.getPixCount(tmpBmpBitmap);
+//				opt.inSampleSize = 6;
+//				Bitmap tmpBmpBitmap = BitmapFactory.decodeFile(img.getPath(), opt);
+//				avgNum = ImageUtil.getPixCount(tmpBmpBitmap);
 //				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
 		}
 
 		handler1.post(thread);
@@ -152,7 +148,10 @@ public class XianShiDafen extends Activity {
 			if(scanResult.length()>0){
 				Log.e("::::::", scanResult.length()+"");
 				String resultCode = reqInetIntent.getExtras().getString("scan_result");
-				GetGrade getGradeThread = new GetGrade(resultCode, avgNum, reqInetIntent);
+
+				opt.inSampleSize = 6;
+				Bitmap tmpBmpBitmap = BitmapFactory.decodeFile(img.getPath(), opt);
+				GetGrade getGradeThread = new GetGrade(resultCode, tmpBmpBitmap, reqInetIntent);
 				new Thread(getGradeThread).start();
 			}
 		}
@@ -202,32 +201,33 @@ public class XianShiDafen extends Activity {
 	}
 	
 	
-	/**
-	 * 
-	 * @param basePixCount	 基准图的像素累加值
-	 * @param maxDifference  最大差异值
-	 * @param currPixCount	 当前图的像素累加值
-	 * @return
-	 */
-	public long grade(long basePixCount, long maxDifference, long currPixCount){
-		double value = 0.00d;
-		long currDiff = Math.abs(basePixCount-currPixCount); //计算当前差异值
-		if(currDiff==maxDifference){				//如果当前差异等于最大差异代表是满分
-			return 100;
-		} 
-		value = currDiff/(maxDifference/40); //根据最大差异和当前差异计算满分40分时可以得几分
-		value+=60;							//加上60分得到不小于60的值
-		if(value<60){
-			value = 60.00d;
-		}
-		return (long)value;
-	}
+//	/**
+//	 * 
+//	 * @param basePixCount	 基准图的像素累加值
+//	 * @param maxDifference  最大差异值
+//	 * @param currPixCount	 当前图的像素累加值
+//	 * @return
+//	 */
+//	public long grade(long basePixCount, long maxDifference, long currPixCount){
+//		double value = 0.00d;
+//		long currDiff = Math.abs(basePixCount-currPixCount); //计算当前差异值
+//		if(currDiff==maxDifference){				//如果当前差异等于最大差异代表是满分
+//			return 100;
+//		} 
+//		value = currDiff/(maxDifference/40); //根据最大差异和当前差异计算满分40分时可以得几分
+//		value+=60;							//加上60分得到不小于60的值
+//		if(value<60){
+//			value = 60.00d;
+//		}
+//		return (long)value;
+//	}
 	
 
 	class GetGrade implements Runnable{
         String resultCode;
         long pixCount;
         Intent intent;
+        Bitmap bitmap;
         public GetGrade(String resultCode) {
 			super();
 			this.resultCode = resultCode;
@@ -247,9 +247,16 @@ public class XianShiDafen extends Activity {
 			this.resultCode = String.valueOf(resultCode);
 			this.pixCount = pixCount;
 		}
+		public GetGrade(String resultCode, Bitmap tmpBmpBitmap, Intent intent) {
+			super();
+			this.resultCode = resultCode;
+			this.intent = intent;
+			bitmap=tmpBmpBitmap;
+		}
 		@Override
 		public void run() {
 			try {
+				pixCount=ImageUtil.getPixCount(bitmap);
 				String path = AllPath.getMakeMaxDifferenceUrl();
 			    String result = Threads.getHttpMaxCountPix(path,resultCode,pixCount);
 				
@@ -263,14 +270,13 @@ public class XianShiDafen extends Activity {
 
 					@Override
 					public void handleMessage(Message msg) {
-						// TODO Auto-generated method stub
 						super.handleMessage(msg);
 						if(msg.what==1){
 							startNextActivity((Long)msg.obj);
 						}
 					}
 				};
-				long finalGrade = grade(baseImgPixCount, maxImgPixDifference,pixCount);
+				long finalGrade = ImageUtil.gradeBitmap(bitmap);//grade(baseImgPixCount, maxImgPixDifference,pixCount);
 				Message msg = Message.obtain();
 				msg.what=1;
 				msg.obj=Long.valueOf(finalGrade);

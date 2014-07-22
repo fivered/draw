@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,7 +20,7 @@ import com.date.ListMap;
 
 public class ImageUtil {
 /**
-	 * å‹ç¼©å›¾ç‰‡
+	 * Ñ¹ËõÍ¼Æ¬
 	 * @param bitmap
 	 * @param width
 	 * @param height
@@ -38,7 +39,7 @@ public class ImageUtil {
 	}
 	
 	/** 
-	 * å›¾ç‰‡è½¬ç°åº¦ 
+	 * Í¼Æ¬×ª»Ò¶È 
 	 * @param bmSrc 
 	 * @return 
 	 * @throws Exception 
@@ -56,7 +57,7 @@ public class ImageUtil {
 	    Bitmap result= bmSrc.copy(Bitmap.Config.ARGB_8888, true);
 	    for (int i = 0; i < h; i++) {
 		    for (int j = 0; j < w; j++) {
-			    // è·å¾—åƒç´ çš„é¢œè‰²
+			    // »ñµÃÏñËØµÄÑÕÉ«
 			    int color = bmSrc.getPixel(j, i);
 			    int red = Color.red(color); //((color & 0x00FF0000) >> 16);
 			    int green = Color.green(color); //((color & 0x0000FF00) >> 8);
@@ -75,7 +76,7 @@ public class ImageUtil {
 	}
 	
 	/**
-	 * è·å–å›¾ä¸­æ‰€æœ‰åƒç´ ç´¯åŠ å€¼
+	 * »ñÈ¡Í¼ÖĞËùÓĞÏñËØÀÛ¼ÓÖµ
 	 * @return percent
 	 * @throws Exception 
 	 */
@@ -101,12 +102,12 @@ public class ImageUtil {
 		return percent;
 	}
 	/**
-	 * æ ¹æ®å›¾åƒçš„ç°åº¦æ–¹å·®å€¼è®¡ç®—åˆ†æ•°ï¼Œçº¯ç™½æˆ–çº¯é»‘æˆ–çº¯ä¸€è‰²çš„åˆ†æ•°æœ€ä½
-	 * @return åˆ†æ•°ï¼ˆ60-100ï¼‰
+	 * ¸ù¾İÍ¼ÏñµÄ»Ò¶È·½²îÖµ¼ÆËã·ÖÊı£¬´¿°×»ò´¿ºÚ»ò´¿Ò»É«µÄ·ÖÊı×îµÍ
+	 * @return ·ÖÊı£¨60-100£©
 	 */
 	public static int gradeBitmap(Bitmap in){
-		//å…ˆå°†å›¾åƒæŒ‰3x3åˆ‡å‰²ï¼Œå¾—åˆ°9å—åå¯¹æ¯ä¸€å—è¿›è¡Œæ–¹å·®è®¡ç®—ï¼Œå†å¯¹9ä¸ªå€¼å–å¹³å‡æ—¢æ˜¯ç»“æœ
-		//è¿™æ ·å¯ä»¥é¿å…æœ‰çš„å›¾åƒä»…éƒ¨åˆ†å®Œå…¨æ¶‚é»‘å‰©ä¸‹ç•™ç™½è€Œè·å¾—é«˜åˆ†
+		//ÏÈ½«Í¼Ïñ°´3x3ÇĞ¸î£¬µÃµ½9¿éºó¶ÔÃ¿Ò»¿é½øĞĞ·½²î¼ÆËã£¬ÔÙ¶Ô9¸öÖµÈ¡Æ½¾ù¼ÈÊÇ½á¹û
+		//ÕâÑù¿ÉÒÔ±ÜÃâÓĞµÄÍ¼Ïñ½ö²¿·ÖÍêÈ«Í¿ºÚÊ£ÏÂÁô°×¶ø»ñµÃ¸ß·Ö
 		int xSize=3,ySize=3;
 		int widthUnit=in.getWidth()/xSize;
 		int heightUnit=in.getHeight()/ySize;
@@ -124,23 +125,23 @@ public class ImageUtil {
 		return scoreSum/cutedList.size();
 	}
 	/**
-	 * æ ¹æ®å›¾åƒçš„ç°åº¦æ–¹å·®å€¼è®¡ç®—åˆ†æ•°ï¼Œçº¯ç™½æˆ–çº¯é»‘æˆ–çº¯ä¸€è‰²çš„åˆ†æ•°æœ€ä½
-	 * @return åˆ†æ•°ï¼ˆ60-100ï¼‰
+	 * ¸ù¾İÍ¼ÏñµÄ»Ò¶È·½²îÖµ¼ÆËã·ÖÊı£¬´¿°×»ò´¿ºÚ»ò´¿Ò»É«µÄ·ÖÊı×îµÍ
+	 * @return ·ÖÊı£¨60-100£©
 	 */
 	private static int gradeBitmapReal(Bitmap cuted){
 		int w=cuted.getWidth(), h=cuted.getHeight();
 		int n= w*h;
-		long sum = 0;//ç°åº¦çš„å’Œ
-		long squareSum = 0;//ç°åº¦çš„å¹³æ–¹çš„å’Œ
+		long sum = 0;//»Ò¶ÈµÄºÍ
+		long squareSum = 0;//»Ò¶ÈµÄÆ½·½µÄºÍ
 		
 	    for (int i = 0; i < h; i++) {
 		    for (int j = 0; j < w; j++) {
-			    // è·å¾—åƒç´ çš„é¢œè‰²
+			    // »ñµÃÏñËØµÄÑÕÉ«
 			    int color = cuted.getPixel(j, i);
 			    int red = Color.red(color); //((color & 0x00FF0000) >> 16);
 			    int green = Color.green(color); //((color & 0x0000FF00) >> 8);
 			    int blue = Color.blue(color); //color & 0x000000FF;
-			    int gray = (red*30+green*59+blue*11)/100;//ä¸ç”¨floatçš„åŸå› ï¼šintè®¡ç®—æé«˜æ€§èƒ½
+			    int gray = (red*30+green*59+blue*11)/100;//²»ÓÃfloatµÄÔ­Òò£ºint¼ÆËãÌá¸ßĞÔÄÜ
 //			    gray = ((float)gray*1.4f) > 255f ? 255 : (int)((float)gray*1.4f);
 			    gray = Math.min(255, gray);
 			    
@@ -150,10 +151,10 @@ public class ImageUtil {
 	    }
 	    long average = sum/n ;
 	    long squareAverage = squareSum/n ;
-	    long dx = squareAverage - average * average;//æ–¹å·®Dï¼ˆX)=E[X^2]-[E(x)]^2 "å¹³æ–¹çš„å¹³å‡å‡å»å¹³å‡çš„å¹³æ–¹"
+	    long dx = squareAverage - average * average;//·½²îD£¨X)=E[X^2]-[E(x)]^2 "Æ½·½µÄÆ½¾ù¼õÈ¥Æ½¾ùµÄÆ½·½"
 	   
-	    int maxDx = 127*127; //ç†è®ºæœ€å¤§æ–¹å·®ï¼Œä¸€åŠé»‘ä¸€åŠç™½å›¾åƒåˆ†æœ€é«˜
-//	    int minDx = 0;//ç†è®ºæœ€å°æ–¹å·®,çº¯è‰²å›¾ç‰‡åˆ†æœ€ä½
+	    int maxDx = 127*127; //ÀíÂÛ×î´ó·½²î£¬Ò»°ëºÚÒ»°ë°×Í¼Ïñ·Ö×î¸ß
+//	    int minDx = 0;//ÀíÂÛ×îĞ¡·½²î,´¿É«Í¼Æ¬·Ö×îµÍ
 	    
 	    int score = (int) (dx * 40 / maxDx + 60);
 	    if(score > 100) score = 100;
@@ -164,7 +165,7 @@ public class ImageUtil {
 		Date date = new Date();
 		SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
 		String time = format.format(date);
-		// åœ¨SDå¡ä¸Šåˆ›å»ºæ–‡ä»¶å¤¹
+		// ÔÚSD¿¨ÉÏ´´½¨ÎÄ¼ş¼Ğ
 		File file = new File(Environment.getExternalStorageDirectory()
 				+ "/myCamera/pics/gray");
 		if (!file.exists()) {
@@ -175,7 +176,7 @@ public class ImageUtil {
 	}
 	
     /**
-     * ä¿å­˜å…¥ç£ç›˜
+     * ±£´æÈë´ÅÅÌ
      * @param data
      * @param path
      * @throws Exception
