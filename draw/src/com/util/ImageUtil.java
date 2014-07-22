@@ -18,8 +18,8 @@ import android.os.Environment;
 import com.date.ListMap;
 
 public class ImageUtil {
-	/**
-	 * ѹ��ͼƬ
+/**
+	 * 压缩图片
 	 * @param bitmap
 	 * @param width
 	 * @param height
@@ -38,7 +38,7 @@ public class ImageUtil {
 	}
 	
 	/** 
-	 * ͼƬת�Ҷ� 
+	 * 图片转灰度 
 	 * @param bmSrc 
 	 * @return 
 	 * @throws Exception 
@@ -56,7 +56,7 @@ public class ImageUtil {
 	    Bitmap result= bmSrc.copy(Bitmap.Config.ARGB_8888, true);
 	    for (int i = 0; i < h; i++) {
 		    for (int j = 0; j < w; j++) {
-			    // ������ص���ɫ
+			    // 获得像素的颜色
 			    int color = bmSrc.getPixel(j, i);
 			    int red = Color.red(color); //((color & 0x00FF0000) >> 16);
 			    int green = Color.green(color); //((color & 0x0000FF00) >> 8);
@@ -75,22 +75,21 @@ public class ImageUtil {
 	}
 	
 	/**
-	 * ��ȡͼ�����������ۼ�ֵ
+	 * 获取图中所有像素累加值
 	 * @return percent
 	 * @throws Exception 
 	 */
 	public static long getPixCount(Bitmap bm) throws Exception{
 		Bitmap grayBm = ImageUtil.bitmap2Gray(bm);
-		Bitmap Bm = grayBm;
 		long gotPoint = 0;
 		long percent = 0;
-		if (Bm!=null)
+		if (grayBm!=null)
 		{
-			int h = Bm.getHeight();
-			int w = Bm.getWidth();
+			int h = grayBm.getHeight();
+			int w = grayBm.getWidth();
 			for (int y = 0; y < h; y++) {
 				for (int x = 0; x < w; x++) {
-					int color = Bm.getPixel(x, y);
+					int color = grayBm.getPixel(x, y);
 					int r = Color.red(color);
 					int g = Color.green(color);
 					int b = Color.blue(color);
@@ -101,12 +100,71 @@ public class ImageUtil {
 		}
 		return percent;
 	}
+	/**
+	 * 根据图像的灰度方差值计算分数，纯白或纯黑或纯一色的分数最低
+	 * @return 分数（60-100）
+	 */
+	public static int gradeBitmap(Bitmap in){
+		//先将图像按3x3切割，得到9块后对每一块进行方差计算，再对9个值取平均既是结果
+		//这样可以避免有的图像仅部分完全涂黑剩下留白而获得高分
+		int xSize=3,ySize=3;
+		int widthUnit=in.getWidth()/xSize;
+		int heightUnit=in.getHeight()/ySize;
+		ArrayList<Bitmap> cutedList=new ArrayList<Bitmap>();
+		for(int x=0 ; x<xSize ; x++){
+			for(int y=0 ; y<ySize ; y++){
+				Bitmap bitmap = Bitmap.createBitmap(in, xSize*widthUnit, ySize*heightUnit, widthUnit, heightUnit);
+				cutedList.add(bitmap);
+			}
+		}
+		int scoreSum = 0;
+		for(Bitmap cuted:cutedList){
+			scoreSum+=gradeBitmapReal(cuted);
+		}
+		return scoreSum/cutedList.size();
+	}
+	/**
+	 * 根据图像的灰度方差值计算分数，纯白或纯黑或纯一色的分数最低
+	 * @return 分数（60-100）
+	 */
+	private static int gradeBitmapReal(Bitmap cuted){
+		int w=cuted.getWidth(), h=cuted.getHeight();
+		int n= w*h;
+		long sum = 0;//灰度的和
+		long squareSum = 0;//灰度的平方的和
+		
+	    for (int i = 0; i < h; i++) {
+		    for (int j = 0; j < w; j++) {
+			    // 获得像素的颜色
+			    int color = cuted.getPixel(j, i);
+			    int red = Color.red(color); //((color & 0x00FF0000) >> 16);
+			    int green = Color.green(color); //((color & 0x0000FF00) >> 8);
+			    int blue = Color.blue(color); //color & 0x000000FF;
+			    int gray = (red*30+green*59+blue*11)/100;//不用float的原因：int计算提高性能
+//			    gray = ((float)gray*1.4f) > 255f ? 255 : (int)((float)gray*1.4f);
+			    gray = Math.min(255, gray);
+			    
+			    sum+=gray;
+			    squareSum+=(gray*gray);
+		    }
+	    }
+	    long average = sum/n ;
+	    long squareAverage = squareSum/n ;
+	    long dx = squareAverage - average * average;//方差D（X)=E[X^2]-[E(x)]^2 "平方的平均减去平均的平方"
+	   
+	    int maxDx = 127*127; //理论最大方差，一半黑一半白图像分最高
+//	    int minDx = 0;//理论最小方差,纯色图片分最低
+	    
+	    int score = (int) (dx * 40 / maxDx + 60);
+	    if(score > 100) score = 100;
+	    return score;
+	}
 	
 	public static String initPath(){
 		Date date = new Date();
 		SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
 		String time = format.format(date);
-		// ��SD���ϴ����ļ���
+		// 在SD卡上创建文件夹
 		File file = new File(Environment.getExternalStorageDirectory()
 				+ "/myCamera/pics/gray");
 		if (!file.exists()) {
@@ -117,7 +175,7 @@ public class ImageUtil {
 	}
 	
     /**
-     * ���������
+     * 保存入磁盘
      * @param data
      * @param path
      * @throws Exception
