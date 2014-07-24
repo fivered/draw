@@ -293,6 +293,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
 		}
 		inactivityTimer.onPause();
 		ambientLightManager.stop();
+		cameraManager.stopPreview();
 		cameraManager.closeDriver();
 		if (!hasSurface) {
 			SurfaceView surfaceView = (SurfaceView) findViewById(R.id.preview_view);
@@ -440,7 +441,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
 			backIntent = null;
 			backIntent = new Intent();
 
-            backIntent.putExtra("greyscale", barcode);
+//            backIntent.putExtra("greyscale", barcode);
             backIntent.putExtra("scan_result", result);
             cameraManager.startPreview();
             cameraManager.getCamera().takePicture(null, null, new PictureCallback() {

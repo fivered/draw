@@ -307,7 +307,7 @@ public class XianShiDafen extends Activity {
 		Intent ji = new Intent(XianShiDafen.this, smjg.class);
 		ji.setData(getIntent().getData());
 		if(d>=60&&d<70){
-			String f = 60+"";
+			String f = d+"";
 			String txt = "继续加油！很有潜力哦……";
 			ji.putExtra("score", f);
 			ji.putExtra("txt", txt);

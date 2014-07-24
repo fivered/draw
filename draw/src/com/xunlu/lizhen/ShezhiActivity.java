@@ -284,7 +284,7 @@ public class ShezhiActivity extends Activity {
 			if(ShezhiActivity.CAMERA_Z_CODE==requestCode ){
 				try {
 					
-					zPercent = ImageUtil.gradeBitmap(bitmap);
+					zPercent = ImageUtil.getPixCount(bitmap);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
