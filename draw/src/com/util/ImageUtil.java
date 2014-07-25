@@ -107,22 +107,26 @@ public class ImageUtil {
 	 * @return 分数（60-100）
 	 */
 	public static int gradeBitmap(Bitmap in){
+		int inWidth=in.getWidth(),inHeight=in.getHeight();
+		Bitmap filter = Bitmap.createBitmap(in, inWidth*9/40, inHeight * 4 /30, inWidth*22/40, inHeight * 16 /30);
 		//先将图像按2x2切割，得到多块后对每一块进行方差计算，再对值取平均既是结果
 		//这样可以避免有的图像仅部分完全涂黑剩下留白而获得高分
 		int xSize=2,ySize=2;
-		int widthUnit=in.getWidth()/xSize;
-		int heightUnit=in.getHeight()/ySize;
+		int widthUnit=filter.getWidth()/xSize;
+		int heightUnit=filter.getHeight()/ySize;
 		ArrayList<Bitmap> cutedList=new ArrayList<Bitmap>();
 		for(int x=0 ; x<xSize ; x++){
 			for(int y=0 ; y<ySize ; y++){
-				Bitmap bitmap = Bitmap.createBitmap(in, x*widthUnit, y*heightUnit, widthUnit, heightUnit);
+				Bitmap bitmap = Bitmap.createBitmap(filter, x*widthUnit, y*heightUnit, widthUnit, heightUnit);
 				cutedList.add(bitmap);
 			}
 		}
 		int scoreSum = 0;
 		for(Bitmap cuted:cutedList){
 			scoreSum+=gradeBitmapReal(cuted);
+			cuted.recycle();
 		}
+		filter.recycle();
 		return scoreSum/cutedList.size();
 	}
 	/**
@@ -154,7 +158,7 @@ public class ImageUtil {
 	    long squareAverage = squareSum/n ;
 	    long dx = squareAverage - average * average;//方差D（X)=E[X^2]-[E(x)]^2 "平方的平均减去平均的平方"
 	    int maxDx = 127*127; //理论最大方差，一半黑一半白图像分最高
-	    maxDx/=4;//降低上限基准，这样分数会打得高一点
+	    maxDx/=5;//降低上限基准，这样分数会打得高一点
 //	    int minDx = 0;//理论最小方差,纯色图片分最低
 	    
 	    int score = (int) (dx * 40 / maxDx + 60);
