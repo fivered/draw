@@ -2,6 +2,7 @@ package com.util;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ import java.util.jar.JarEntry;
 
 import android.R.integer;
 import android.graphics.Bitmap;
+import android.graphics.Bitmap.CompressFormat;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.os.Environment;
@@ -126,6 +128,12 @@ public class ImageUtil {
 			scoreSum+=gradeBitmapReal(cuted);
 			cuted.recycle();
 		}
+//		try {
+//			File outputFile = new File(initPath().replace("gray.jpg", "filter.jpg"));
+//			filter.compress(CompressFormat.JPEG, 80, new FileOutputStream(outputFile));
+//		} catch (FileNotFoundException e) {
+//			e.printStackTrace();
+//		}
 		filter.recycle();
 		return scoreSum/cutedList.size();
 	}
@@ -149,7 +157,8 @@ public class ImageUtil {
 			    int gray = (red*30+green*59+blue*11)/100;//不用float的原因：int计算提高性能
 //			    gray = ((float)gray*1.4f) > 255f ? 255 : (int)((float)gray*1.4f);
 			    gray = Math.min(255, gray);
-			    
+			    gray-=100;//底色是100的灰度
+			    gray = Math.max(0, gray);
 			    sum+=gray;
 			    squareSum+=(gray*gray);
 		    }
@@ -157,12 +166,12 @@ public class ImageUtil {
 	    long average = sum/n ;
 	    long squareAverage = squareSum/n ;
 	    long dx = squareAverage - average * average;//方差D（X)=E[X^2]-[E(x)]^2 "平方的平均减去平均的平方"
-	    int maxDx = 127*127; //理论最大方差，一半黑一半白图像分最高
-	    maxDx/=5;//降低上限基准，这样分数会打得高一点
+	    int maxDx = 77*77; //理论最大方差，一半黑一半白图像分最高
+	    maxDx/=4;//降低上限基准，这样分数会打得高一点
 //	    int minDx = 0;//理论最小方差,纯色图片分最低
 	    
 	    int score = (int) (dx * 40 / maxDx + 60);
-//		   Log.d("gradeBitmapReal", "score"+score+",dx="+dx+",squareAverage="+squareAverage+",average="+average);
+//		Log.d("gradeBitmapReal", "score"+score+",dx="+dx+",squareAverage="+squareAverage+",average="+average);
 	    if(score > 100) score = 100;
 	    return score;
 	}
