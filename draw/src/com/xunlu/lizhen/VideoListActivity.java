@@ -7,11 +7,17 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 
+
+
+
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
@@ -159,30 +165,68 @@ public class VideoListActivity extends DownloadActivity {
 		}
 	}
 	
+	ProgressDialog pd;
+	final Handler handler=new Handler();
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-		if(resultCode==Activity.RESULT_CANCELED){
-			int size = adapter.getCount();
-			currPosition++;
-			if(currPosition>=size){
-				currPosition = 0;
+//		StringBuilder sb=new StringBuilder();
+//		for(String key:data.getExtras().keySet()){
+//			sb.append(key+"="+data.getExtras().get(key));
+//		}
+//		Log.d("fax", sb.toString());
+		
+		if(requestCode == PLAY_ACTIVITY){
+			if(pd==null){
+				pd=new ProgressDialog(this);
+				pd.setButton(DialogInterface.BUTTON_POSITIVE, "立即播放", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						playNextVideo();
+					}
+				});
+				pd.setButton(DialogInterface.BUTTON_NEGATIVE, "取消", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+					}
+				});
 			}
-			final VideoItem videoItem=adapter.getItem(currPosition);
-			if(videoItem.isComplete()){
-				File file = videoItem.getFile();
-				Intent playIntent = OpenFileUtil.getOpenIntent(file.getPath());
-				startActivityForResult(playIntent, requestCode);
-			}else if(videoItem.isDownloading()){
-				
-			}else{
-				long dId=startDownload(videoItem.url);
-				sp.edit().putLong(videoItem.getId(), dId).commit();
-				isAutoPlay = true;
-			}
+			pd.show();
+			handler.postDelayed(new Runnable() {
+				int time=3;
+				public void run() {
+					if(pd.isShowing()){
+						time--;
+						pd.setMessage(time+"秒后自动播放下一个视频");
+						if(time<=0){
+							playNextVideo();
+							pd.dismiss();
+						}else{
+							handler.postDelayed(this, 1000);
+						}
+					}
+				}
+			}, 0);
 		}
-		
-		
+	}
+	private void playNextVideo(){
+		int size = adapter.getCount();
+		currPosition++;
+		if(currPosition>=size){
+			currPosition = 0;
+		}
+		final VideoItem videoItem=adapter.getItem(currPosition);
+		if(videoItem.isComplete()){
+			File file = videoItem.getFile();
+			Intent playIntent = OpenFileUtil.getOpenIntent(file.getPath());
+			startActivityForResult(playIntent, PLAY_ACTIVITY);
+		}else if(videoItem.isDownloading()){
+			
+		}else{
+			long dId=startDownload(videoItem.url);
+			sp.edit().putLong(videoItem.getId(), dId).commit();
+			isAutoPlay = true;
+		}
 	}
 	
 	public static class VideoItem{

@@ -29,6 +29,11 @@ public class smjg extends Activity {
 	int wav;
 	
 
+	@Override
+	public void onBackPressed() {
+		backhome(null);
+	}
+
 	// É¨Ãè½á¹û
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +48,6 @@ public class smjg extends Activity {
 //		ij.setOnClickListener(new OnClickListener() {
 //			@Override
 //			public void onClick(View v) {
-//				// TODO Auto-generated method stub
 //				// ´òÓ¡½±×´
 //			}
 //		});
@@ -193,7 +197,7 @@ public class smjg extends Activity {
 		if(img!=null){
 			String imgString =img.getPath();
 			BitmapFactory.Options opt = new BitmapFactory.Options();
-			opt.inSampleSize = 4;
+			opt.inSampleSize = 2;
 			Bitmap bm = BitmapFactory.decodeFile(imgString,opt);
 			iv.setImageBitmap(bm);
 		}

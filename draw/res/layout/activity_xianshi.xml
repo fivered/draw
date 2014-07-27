@@ -17,29 +17,45 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1" >
-
+<ImageView
+	    android:id="@+id/imgzidingtu"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:clickable="true"
+	    android:onClick="backhome"
+	    android:src="@drawable/home" />
             <LinearLayout 
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_marginLeft="300dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:orientation="vertical">
 	            <TextView 
 	                android:id="@+id/serchname"
-	                android:layout_width="100dp"
-	                android:layout_height="50dp"
-	                android:textColor="@color/hei"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:drawablePadding="10dp"
+	                android:drawableLeft="@drawable/name"
+	                android:textSize="30sp"
+	                android:padding="10dp"
+	                android:textStyle="bold"
+	                android:textColor="#ff0000"
 	                android:text="姓名" />
 	            <TextView 
 	                android:id="@+id/serchphone"
-	                android:layout_width="100dp"
-	                android:layout_height="50dp"
-	                android:textColor="@color/hei"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:drawablePadding="10dp"
+	                android:drawableLeft="@drawable/phone"
+	                android:textSize="30sp"
+	                android:padding="10dp"
+	                android:textStyle="bold"
+	                android:textColor="#ff0000"
 	                android:text="电话" />
             </LinearLayout>
             <ImageView
                 android:id="@+id/xianshiss"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:visibility="invisible"
                 android:layout_marginLeft="100dp"
                 android:src="@drawable/pframe" />
 

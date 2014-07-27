@@ -36,6 +36,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
@@ -77,6 +78,7 @@ import com.google.zxing.client.android.result.ResultButtonListener;
 import com.google.zxing.client.android.result.ResultHandler;
 import com.google.zxing.client.android.result.supplement.SupplementalInfoRetriever;
 import com.google.zxing.client.android.share.ShareActivity;
+import com.util.ImageUtil;
 import com.xunlu.lizhen.R;
 
 /**
@@ -448,7 +450,13 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
                 public void onPictureTaken(byte[] data, Camera camera) {
                     String path = initPath();
                     try {
-                        data2file(data, path);// ´æµ½SD¿¨
+                    	BitmapFactory.Options options=new BitmapFactory.Options();
+                    	options.inSampleSize = 1;
+                    	Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length, options);
+                    	bitmap = ImageUtil.filterBitmap(bitmap);
+                    	bitmap.compress(CompressFormat.JPEG, 80, new FileOutputStream(path));
+                    	bitmap.recycle();
+//                        data2file(data, path);// ´æµ½SD¿¨
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

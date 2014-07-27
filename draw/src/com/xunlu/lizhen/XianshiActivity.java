@@ -29,6 +29,7 @@ import android.os.Message;
 import android.os.Handler.Callback;
 import android.util.Log;
 import android.view.Menu;
+import android.view.View;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -69,6 +70,15 @@ public class XianshiActivity extends Activity {
 		ga.setCon(getApplicationContext());
 		g.setAdapter(ga);
 		
+	}
+	/**
+	 * 点击右上角返回主页面的方法；
+	 * @param v
+	 */
+	public void backhome(View v) {
+		Intent intent = new Intent(this, MainActivity.class);
+		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		startActivity(intent);
 	}
 	
 	private class HttpThread implements Runnable{

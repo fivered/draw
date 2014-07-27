@@ -104,13 +104,20 @@ public class ImageUtil {
 		}
 		return percent;
 	}
+	/**将拍照得到的图像的多余的部分割去 */
+	public static Bitmap filterBitmap(Bitmap in){
+		int inWidth=in.getWidth(),inHeight=in.getHeight();
+		Bitmap filter = Bitmap.createBitmap(in, inWidth*3/16, inHeight * 9 /160, inWidth*11/16, inHeight * 38 /60);
+		in.recycle();
+		return filter;
+	}
 	/**
 	 * 根据图像的灰度方差值计算分数，纯白或纯黑或纯一色的分数最低
 	 * @return 分数（60-100）
 	 */
-	public static int gradeBitmap(Bitmap in){
-		int inWidth=in.getWidth(),inHeight=in.getHeight();
-		Bitmap filter = Bitmap.createBitmap(in, inWidth*9/40, inHeight * 4 /30, inWidth*22/40, inHeight * 16 /30);
+	public static int gradeBitmap(Bitmap filter){
+//		int inWidth=in.getWidth(),inHeight=in.getHeight();
+//		Bitmap filter = Bitmap.createBitmap(in, inWidth*3/16, inHeight * 3 /80, inWidth*8/16, inHeight * 16 /30);
 		//先将图像按2x2切割，得到多块后对每一块进行方差计算，再对值取平均既是结果
 		//这样可以避免有的图像仅部分完全涂黑剩下留白而获得高分
 		int xSize=2,ySize=2;
@@ -156,9 +163,9 @@ public class ImageUtil {
 			    int blue = Color.blue(color); //color & 0x000000FF;
 			    int gray = (red*30+green*59+blue*11)/100;//不用float的原因：int计算提高性能
 //			    gray = ((float)gray*1.4f) > 255f ? 255 : (int)((float)gray*1.4f);
-			    gray = Math.min(255, gray);
-			    gray-=100;//底色是100的灰度
-			    gray = Math.max(0, gray);
+			    gray = Math.min(100, gray);//底色是100的灰度
+//			    gray-=100;//底色是100的灰度
+//			    gray = Math.max(0, gray);
 			    sum+=gray;
 			    squareSum+=(gray*gray);
 		    }
@@ -166,13 +173,14 @@ public class ImageUtil {
 	    long average = sum/n ;
 	    long squareAverage = squareSum/n ;
 	    long dx = squareAverage - average * average;//方差D（X)=E[X^2]-[E(x)]^2 "平方的平均减去平均的平方"
-	    int maxDx = 77*77; //理论最大方差，一半黑一半白图像分最高
-	    maxDx/=4;//降低上限基准，这样分数会打得高一点
+	    int maxDx = 50*50; //理论最大方差，一半黑一半白图像分最高
+	    maxDx/=2;//降低上限基准，这样分数会打得高一点
 //	    int minDx = 0;//理论最小方差,纯色图片分最低
 	    
-	    int score = (int) (dx * 40 / maxDx + 60);
+	    int score = (int) (dx * 40 / maxDx + 50);
 //		Log.d("gradeBitmapReal", "score"+score+",dx="+dx+",squareAverage="+squareAverage+",average="+average);
 	    if(score > 100) score = 100;
+	    if(score <60) score =60;
 	    return score;
 	}
 	

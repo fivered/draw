@@ -84,7 +84,7 @@ public class XianShiDafen extends Activity {
 		Bitmap newBitmap = null;
 //		Bitmap bitmap = null;
 		if(img!=null){
-			opt.inSampleSize = 4;
+			opt.inSampleSize = 2;
 //            bitmap=BitmapFactory.decodeFile(img.getPath());
             //newBitmap = ImageUtil.zoomBitmap(bitmap, bitmap.getWidth()/4, bitmap.getHeight()/4);
             newBitmap = BitmapFactory.decodeFile(img.getPath(), opt);
@@ -149,7 +149,7 @@ public class XianShiDafen extends Activity {
 				Log.e("::::::", scanResult.length()+"");
 				String resultCode = reqInetIntent.getExtras().getString("scan_result");
 
-				opt.inSampleSize = 6;
+				opt.inSampleSize = 2;
 				Bitmap tmpBmpBitmap = BitmapFactory.decodeFile(img.getPath(), opt);
 				GetGrade getGradeThread = new GetGrade(resultCode, tmpBmpBitmap, reqInetIntent);
 				new Thread(getGradeThread).start();

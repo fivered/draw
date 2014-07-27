@@ -10,6 +10,7 @@
         android:id="@+id/user_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:singleLine="true"
         android:background="@drawable/dialog_input"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="75dp"
@@ -21,6 +22,7 @@
         android:layout_height="wrap_content"
         android:background="@drawable/dialog_input"
         android:layout_gravity="center_horizontal"
+        android:inputType="phone"
         android:layout_marginTop="10dp"
         android:paddingLeft="15dp"
         android:hint="电话"/>
@@ -32,15 +34,15 @@
         android:gravity="center_horizontal"
         >
         <ImageButton 
-            android:id="@+id/dialogsubmit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/dialogsubmitselector"/>
-        <ImageButton 
             android:id="@+id/dialogcancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="50dp"
             android:background="@drawable/dialogcancelselector"/>
+        <ImageButton 
+            android:id="@+id/dialogsubmit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="50dp"
+            android:background="@drawable/dialogsubmitselector"/>
     </LinearLayout>
 </LinearLayout>

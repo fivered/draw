@@ -6,59 +6,16 @@
 
     <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
+        android:layout_height="match_parent"
+        android:gravity="center_horizontal"
         android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true" >
+        android:paddingRight="100dp"
+        android:orientation="vertical" >
 
         <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="0.6"
-            android:orientation="vertical" >
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="82dp" >
-
-                <ImageView
-                    android:id="@+id/imgzidingtu"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:clickable="true"
-                    android:onClick="backhome"
-                    android:src="@drawable/home" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center" >
-
-                <ImageView
-                    android:id="@+id/iv_smjg"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="85dp"
-                    android:layout_marginBottom="15dp"
-                    android:src="@drawable/home" />
-
-            </LinearLayout>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="0.14"
-            android:gravity="center_horizontal"
-            android:orientation="vertical" 
-          >
-
-            <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="150dp">
+            android:layout_marginTop="180dp" >
 
             <TextView
                 android:id="@+id/shechild"
@@ -67,31 +24,30 @@
                 android:text="@string/fenzhi"
                 android:textColor="@color/hei"
                 android:textSize="26dp" />
-            
+
             <ImageView
                 android:id="@+id/bai"
                 android:layout_width="150dp"
                 android:layout_height="75dp"
                 android:src="@drawable/onedoublezero" />
-            
+
             <ImageView
                 android:id="@+id/shi"
                 android:layout_width="50dp"
                 android:layout_height="75dp"
                 android:src="@drawable/eigth" />
-            
+
             <ImageView
                 android:id="@+id/ge"
                 android:layout_width="50dp"
                 android:layout_height="75dp"
-                android:src="@drawable/o"/>
-
+                android:src="@drawable/o" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-              android:layout_marginBottom="20dp" >
+            android:layout_marginBottom="20dp" >
 
             <TextView
                 android:id="@+id/guli"
@@ -99,11 +55,32 @@
                 android:layout_height="wrap_content"
                 android:text="TextView"
                 android:textColor="@color/hei"
-                android:textSize="22dp" 
-                 />
-        </LinearLayout>
-            
+                android:textSize="22dp" />
         </LinearLayout>
     </LinearLayout>
+
+	<ImageView
+	    android:id="@+id/imgzidingtu"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_alignParentBottom="true"
+	    android:layout_alignParentRight="true"
+	    android:layout_margin="80dp"
+	    android:layout_marginBottom="70dp"
+	    android:layout_marginRight="80dp"
+	    android:clickable="true"
+	    android:onClick="backhome"
+	    android:scaleType="centerInside"
+	    android:src="@drawable/home" />
+
+	<ImageView
+	    android:id="@+id/iv_smjg"
+	    android:layout_width="440dp"
+	    android:layout_centerVertical="true"
+	    android:layout_height="wrap_content"
+	    android:layout_marginLeft="126dp"
+	    android:paddingBottom="28dp"
+	    android:adjustViewBounds="true"
+	    android:src="@drawable/home" />
 
 </RelativeLayout>
