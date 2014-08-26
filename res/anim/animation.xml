@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animation-list android:oneshot="false"   
+    xmlns:android="http://schemas.android.com/apk/res/android">   
+   
+    <!-- duration为每张逐帧播放间隔，  
+         oneshot 为false 代表循环播放，设置为true 即播放一次即停止。 -->  
+    <item android:duration="300" android:drawable="@drawable/gif" />   
+    <item android:duration="300" android:drawable="@drawable/gif" />   
+    <item android:duration="300" android:drawable="@drawable/gif" />   
+    <item android:duration="300" android:drawable="@drawable/gif" />   
+</animation-list>    
