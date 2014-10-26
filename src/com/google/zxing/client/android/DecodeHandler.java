@@ -83,13 +83,13 @@ final class DecodeHandler extends Handler {
     long start = System.currentTimeMillis();
     Result rawResult = null;
     // 对数据进行翻转（摄像头通过了镜子，此处调整）
-// 		byte[] rotatedData = new byte[data.length];
-// 		for (int y = 0; y < height; y++) {
-// 			for (int x = 0; x < width; x++)
-// 				rotatedData[width - 1 - x + y * width] = data[x + y * width];
-// 		}
-    //PlanarYUVLuminanceSource source = activity.getCameraManager().buildLuminanceSource(rotatedData, width, height);
-    PlanarYUVLuminanceSource source = activity.getCameraManager().buildLuminanceSource(data, width, height);
+ 		byte[] rotatedData = new byte[data.length];
+ 		for (int y = 0; y < height; y++) {
+ 			for (int x = 0; x < width; x++)
+ 				rotatedData[width - 1 - x + y * width] = data[x + y * width];
+ 		}
+    PlanarYUVLuminanceSource source = activity.getCameraManager().buildLuminanceSource(rotatedData, width, height);
+    //PlanarYUVLuminanceSource source = activity.getCameraManager().buildLuminanceSource(data, width, height);
     if (source != null) {
       BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
       try {
