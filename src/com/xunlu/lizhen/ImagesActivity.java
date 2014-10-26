@@ -28,7 +28,7 @@ public class ImagesActivity extends Activity {
 		int position = getIntent().getIntExtra(Extra_Position, 0);
 		
 		NetImgsViewPager viewPager = new NetImgsViewPager(this);
-		viewPager.setImageZoomAble(true);//允许支持手势缩放
+		//viewPager.setImageZoomAble(true);//允许支持手势缩放
 		final TopBarContain topBarContain = new TopBarContain(this).setTitle("1/" + imgs.length)
 				.setLeftFinish("返回", 0)
 				.setContentView(viewPager);

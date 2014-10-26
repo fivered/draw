@@ -30,11 +30,20 @@ public class ImageUtil {
 	 * @return
 	 */
 	public static Bitmap zoomBitmap(Bitmap bitmap,int width,int height){
+		if (width == 0 && height == 0) {
+			return bitmap;
+		}
 		int w = bitmap.getWidth();
 		int h = bitmap.getHeight();
 		Matrix matrix = new Matrix();
 		float scalewidth =(float) width/w;
 		float scaleheight =(float) height/h;
+		if (height==0) {
+			scaleheight = scalewidth;
+		}
+		if (width==0) {
+			scalewidth = scaleheight;
+		}
 		matrix.postScale(scalewidth, scaleheight);
 		Bitmap newbit = Bitmap.createBitmap(bitmap, 0, 0, w, h, matrix, true);
 	    ListMap.getLb().put(ListMap.getIndex(), newbit);

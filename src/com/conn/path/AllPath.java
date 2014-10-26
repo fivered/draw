@@ -13,7 +13,7 @@ public class AllPath {
 		AllPath.getFuadress = getFuadress;
 	}
 	public static String getMakeMaxDifferenceUrl(){
-		String path = getFuadress+ "/Api/Pic/pic/";
+		String path = getFuadress+ "/Api/Pic/scorePic/";
 		return path;
 	}
 	

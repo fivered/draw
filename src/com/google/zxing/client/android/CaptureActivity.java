@@ -454,6 +454,7 @@ public final class CaptureActivity extends Activity implements SurfaceHolder.Cal
                     	options.inSampleSize = 1;
                     	Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length, options);
                     	bitmap = ImageUtil.filterBitmap(bitmap);
+                    	bitmap = ImageUtil.zoomBitmap(bitmap, 600, 0);
                     	bitmap.compress(CompressFormat.JPEG, 80, new FileOutputStream(path));
                     	bitmap.recycle();
 //                        data2file(data, path);// ´æµ½SD¿¨

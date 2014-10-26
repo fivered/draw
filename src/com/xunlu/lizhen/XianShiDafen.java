@@ -1,6 +1,7 @@
 package com.xunlu.lizhen;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,9 +32,13 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.conn.path.AllPath;
 import com.date.ListMap;
+import com.fax.utils.http.HttpUtils;
+import com.fax.utils.task.ResultAsyncTask;
+import com.google.gson.Gson;
 import com.jiexi.GetRes;
 import com.thread.m.Threads;
 import com.util.ImageUtil;
@@ -87,8 +92,6 @@ public class XianShiDafen extends Activity {
             //newBitmap = ImageUtil.zoomBitmap(bitmap, bitmap.getWidth()/4, bitmap.getHeight()/4);
             newBitmap = BitmapFactory.decodeFile(img.getPath(), opt);
             imageView.setImageBitmap(newBitmap);
-            //bitmap
-
 		}else{
 			return;
 		}
@@ -104,29 +107,6 @@ public class XianShiDafen extends Activity {
 			if (spf.getString("ic", "").equals("1")) {
 				value = spf.getInt("value", 450);
 			}
-//				if(uris!=null){
-//					for (int i = 0; i < uris.size(); i++) {
-//						String pathString = uris.get(i);
-//						if (pathString==null){
-//							break;
-//						}
-//						if(pathString.length()<1){
-//							break;
-//						}
-//			            Bitmap tmpBmp = ImageUtil.zoomBitmap(bitmap, bitmap.getWidth()/6, bitmap.getHeight()/6);
-//			            long tmp = ImageUtil.getPixCount(tmpBmp);
-//						if(avgNum ==0){
-//							avgNum = tmp;
-//						}else{
-//							avgNum = (avgNum+tmp)/2;
-//						}
-//					}
-//				}else{
-				//Bitmap tmpBmpBitmap = ImageUtil.zoomBitmap(bitmap, bitmap.getWidth()/6, bitmap.getHeight()/6);
-//				opt.inSampleSize = 6;
-//				Bitmap tmpBmpBitmap = BitmapFactory.decodeFile(img.getPath(), opt);
-//				avgNum = ImageUtil.getPixCount(tmpBmpBitmap);
-//				}
 		}
 
 		//handler1.post(thread);
@@ -135,22 +115,40 @@ public class XianShiDafen extends Activity {
 		animation.setDuration(4000);// 设置动画持续时间
 		animation.setRepeatCount(1);// 设置重复次数
 		animation.setRepeatMode(Animation.REVERSE);
-		// 设置反方向执行
-		// start.setOnClickListener(new OnClickListener() {
-		// public void onClick(View arg0) {
 		fly.setAnimation(animation);
 		/** 开始动画 */
 		animation.startNow();
 		String scanResult = reqInetIntent.getStringExtra("scan_result");
 		if (scanResult!=null){
 			if(scanResult.length()>0){
-				Log.e("::::::", scanResult.length()+"");
-				String resultCode = reqInetIntent.getExtras().getString("scan_result");
+				final String resultCode = reqInetIntent.getExtras().getString("scan_result");
 
-				opt.inSampleSize = 2;
-				Bitmap tmpBmpBitmap = BitmapFactory.decodeFile(img.getPath(), opt);
-				GetGrade getGradeThread = new GetGrade(resultCode, tmpBmpBitmap, reqInetIntent);
-				new Thread(getGradeThread).start();
+				new ResultAsyncTask<SorcererResponse>(this) {
+
+					@Override
+					protected void onPostExecuteSuc(SorcererResponse result) {
+						if(result.isOk()){
+							startNextActivity(Long.valueOf(result.getBase_score()));
+						}else{
+							Toast.makeText(getApplicationContext(), result.getMsg(), Toast.LENGTH_SHORT).show();
+						}
+					}
+
+					@Override
+					protected SorcererResponse doInBackground(Void... params) {
+						Map<String, ContentBody> pairMap = new HashMap<String, ContentBody>();
+						try {
+							pairMap.put("name", new StringBody(resultCode));
+							pairMap.put("username", new StringBody(getIntent().getExtras().getString("username")));
+							pairMap.put("phone", new StringBody(getIntent().getExtras().getString("userphon")));
+						} catch (UnsupportedEncodingException e) {
+							e.printStackTrace();
+						}
+						pairMap.put("score_img", new FileBody(new File(img.getPath()),"image/jpeg"));
+						String result = HttpUtils.reqForPost(AllPath.getMakeMaxDifferenceUrl(), pairMap);
+						return new Gson().fromJson(result, SorcererResponse.class);
+					}
+				}.setProgressDialog().execute();
 			}
 		}
 	}
@@ -186,9 +184,6 @@ public class XianShiDafen extends Activity {
 
 	};
 
-	// protected void onStart() {
-	// iv.setImageBitmap(lmap.get(0));
-	// };
 	/**
 	 * 点击右上角返回主页面的方法；
 	 * @param v
@@ -199,28 +194,6 @@ public class XianShiDafen extends Activity {
 		startActivity(intent);
 	}
 	
-	
-//	/**
-//	 * 
-//	 * @param basePixCount	 基准图的像素累加值
-//	 * @param maxDifference  最大差异值
-//	 * @param currPixCount	 当前图的像素累加值
-//	 * @return
-//	 */
-//	public long grade(long basePixCount, long maxDifference, long currPixCount){
-//		double value = 0.00d;
-//		long currDiff = Math.abs(basePixCount-currPixCount); //计算当前差异值
-//		if(currDiff==maxDifference){				//如果当前差异等于最大差异代表是满分
-//			return 100;
-//		} 
-//		value = currDiff/(maxDifference/40); //根据最大差异和当前差异计算满分40分时可以得几分
-//		value+=60;							//加上60分得到不小于60的值
-//		if(value<60){
-//			value = 60.00d;
-//		}
-//		return (long)value;
-//	}
-
 	class GetGrade implements Runnable{
         String resultCode;
         long pixCount;
